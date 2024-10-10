@@ -1,22 +1,7 @@
-import readline from "readline";
+import { askQuestion, closeReadline } from "../utils/utils";
 
 let array: number[] = [];
 let set: Set<number> = new Set<number>();
-
-// Create an interface for reading input and writing output
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-// Utility function to ask questions using Promises
-const askQuestion = (query: string): Promise<string> => {
-  return new Promise((resolve) => {
-    rl.question(query, (answer) => {
-      resolve(answer);
-    });
-  });
-};
 
 const main = async () => {
   try {
@@ -30,7 +15,7 @@ const main = async () => {
       console.error(
         "Invalid sizes entered. Please enter two numbers separated by a space."
       );
-      rl.close();
+      closeReadline();
       return;
     }
 
@@ -42,7 +27,7 @@ const main = async () => {
 
     if (array.length !== arrSize) {
       console.error("Invalid number of elements entered for the array.");
-      rl.close();
+      closeReadline();
       return;
     }
 
@@ -54,12 +39,12 @@ const main = async () => {
 
     if (set.size !== setSize) {
       console.error("Invalid number of elements entered for the set.");
-      rl.close();
+      closeReadline();
       return;
     }
 
     minPermutation(array, set);
-    rl.close();
+    closeReadline();
   } catch (error) {
     console.error("An error occurred while processing the input.", error);
   }
