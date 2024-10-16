@@ -1,4 +1,4 @@
-import { IHexagon } from "./types";
+import { IHexagon } from "../types";
 
 export class Hexagon implements IHexagon {
   public x: number;
