@@ -1,9 +1,19 @@
+export interface Cords {
+  x: number | null;
+  y: number | null;
+}
+
+export interface Position {
+  row: number;
+  col: number;
+}
+
 export interface IHexagon {
-  x: number;
-  y: number;
-  radius: number;
+  cords: Cords;
+  hivePos: Position;
+  apothem: number;
   side: number;
   isActivated: boolean;
-  getRadius(hexagonEdge: number): number;
+  getApothem(hexagonSide: number): number;
   activate(): void;
 }

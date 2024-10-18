@@ -3,58 +3,80 @@ import { askQuestion } from "../utils/utils";
 import { Hexagon } from "./classes/hexagon";
 import { Hive } from "./classes/hive";
 
-const hiveCreation = async () => {
+const hiveCreation = async (): Promise<Hive> => {
   const hive: Hive = Hive.getInstance();
 
-  const hiveSize = await askQuestion("How big should the hive be? eg. 3 3: ");
-  const [rows, columns] = hiveSize.split(" ").map(Number);
-  const evenColumnsAmount = columns - 1;
+  // ✨ Uncomment this after testing
+  // const hiveSize = await askQuestion("How big should the hive be? eg. 3 3: ");
+  // const [rows, columns] = hiveSize.split(" ").map(Number);
 
+  // 🧪 For Testing
+  const rows = 3;
+  const columns = 3;
+
+  // Create the Hive by adding rows
   for (let i = 0; i < rows; i++) {
-    hive.rows.push([]);
-    if (i % 2 !== 0) {
-      // Mona
-      for (let j = 0; j < evenColumnsAmount; j++) {
-        hive.rows[i].push(new Hexagon(i + 1, j + 1, 1));
-        hive.totalHexagons++;
-      }
-    } else {
-      // Zyga
-      for (let j = 0; j < columns; j++) {
-        hive.rows[i].push(new Hexagon(i + 1, j + 1, 1));
-        hive.totalHexagons++;
-      }
-    }
+    hive.addRow(columns);
   }
 
-  console.log("The Hive: ", hive);
+  console.log("");
+  console.log("-----------------------------");
+  console.log("[Hive Creation] - The Hive: ", hive);
 
   return hive;
 };
 
 const hiveActivation = async (hive: Hive) => {
-  const hexagonsToActivate: string[] = [];
+  console.log("");
+  console.log("-----------------------------");
+  console.log("[Hive Activation] - Hive Rows Amount: ", hive.rows.length);
 
-  console.log("Hive Activation - Hive Rows Amount: ", hive.rows.length);
+  // 🧪 For Testing
+  const rowsWithHexagonsToActivate = [
+    ["0", "1", "0"],
+    ["0", "1"],
+    ["0", "0", "0"],
+  ];
 
   for (let i = 0; i < hive.rows.length; i++) {
-    const hexagonsToActivate = (await askQuestion("Nigga eg. 0 1 0: ")).split(
-      " "
-    );
+    // ✨ Uncomment this after testing
+    // const hexagonsToActivate = (
+    //   await askQuestion("Hexagon Activaton (eg. 0 1 0): ")
+    // ).split(" ");
 
-    // we are looping each row
+    // ✨ Uncomment this after testing
+    // hive.rows[i].forEach((hexagon, index) => {
+    //   if (Number(hexagonsToActivate[index]) === 1)
+    //     hive.activateHexagon(hexagon);
+    // });
+
+    // 🧪 For Testing
     hive.rows[i].forEach((hexagon, index) => {
-      if (Number(hexagonsToActivate[index]) === 1) hexagon.activate();
-      hive.activatedHexagons.push(hexagon);
+      if (Number(rowsWithHexagonsToActivate[i][index]) === 1)
+        // console.log("Hexagon: ", hexagon);
+        hive.activateHexagon(hexagon);
     });
   }
+
+  console.log("");
+  console.log("-----------------------------");
+  console.log("[Hive Activation] - Final Form: ", hive);
+  console.log("");
+
+  hive.activatedHexagons.forEach((hexagon) => {
+    console.log("");
+
+    console.log(
+      `[Hive Activation] - Activated Hexagon: (${hexagon.hivePos.row} ${hexagon.hivePos.col})`
+    );
+    console.log("");
+  });
 };
 
 const main = async () => {
   const hive = await hiveCreation();
   await hiveActivation(hive);
-  console.log("#2 - The Hive: ", hive);
-
   exit();
 };
+
 main();
