@@ -1,5 +1,7 @@
-import { Cords, Position } from "../types";
+import { ConnectedHexagon, Cords, HiveOperation, Position } from "../types";
+import { roundTo } from "../utils";
 import { Hexagon } from "./hexagon";
+import { cloneDeep, round } from "lodash";
 
 type Row = Hexagon[];
 
@@ -8,7 +10,6 @@ export class Hive {
   public rows: Row[] = [];
   public totalHexagons: number = 0;
   public activatedHexagons: Hexagon[] = [];
-  private currentReferenceHexagon: Hexagon | null = null;
 
   private constructor() {
     Hive.instance = this;
@@ -21,6 +22,12 @@ export class Hive {
 
     return Hive.instance;
   };
+
+  static resetInstance() {
+    Hive.instance.rows = [];
+    Hive.instance.totalHexagons = 0;
+    Hive.instance.activatedHexagons = [];
+  }
 
   public calcTotalHexagons = (): number => {
     let total = 0;
@@ -40,7 +47,7 @@ export class Hive {
     Hive.instance.rows.push(row);
     const isOdd = Hive.instance.rows.length % 2 !== 0;
 
-    console.log("[Add Row]: Is Odd: ", isOdd);
+    // console.log("[Add Row]: Is Odd: ", isOdd);
 
     // Check if its the 1st Row
     if (Hive.instance.rows.length === 0) {
@@ -80,38 +87,11 @@ export class Hive {
   };
 
   public calcCordsForHexagons = (): void => {
-    Hive.instance.rows.forEach((row, rowIndex) => {
+    Hive.instance.rows.forEach((row) => {
       row.forEach((hexagon) => {
-        if (
-          !this.currentReferenceHexagon ||
-          this.currentReferenceHexagon.cords.x === null ||
-          this.currentReferenceHexagon.cords.y === null
-        )
-          throw new Error(
-            "class Hexagon -> calcCordsForHexagons -> Hive.instance.rows.forEach: Reference Hexagon cords are null"
-          );
-
-        // /// Calculate the x and y cords
-        // Check if its the 1st Hexagon in the Hive
-        if (hexagon.hivePos.row === 0 && hexagon.hivePos.col === 0) {
-          hexagon.cords.x = 0;
-          hexagon.cords.y = 0;
-          this.currentReferenceHexagon = hexagon;
-          return;
-        }
-
         // Check if it belongs to an odd row
         if (hexagon.hivePos.row % 2 !== 0) {
           this.calcCordsForOddRow(hexagon);
-
-          // Make the 1st Hexagon in the next odd row the new reference hexagon
-          if (
-            hexagon.hivePos.row - this.currentReferenceHexagon.hivePos.row ===
-            1
-          ) {
-            this.currentReferenceHexagon = hexagon;
-          }
-          return;
         } else {
           //it belongs to an even row
           this.calcCordsForEvenRow(hexagon);
@@ -121,37 +101,158 @@ export class Hive {
   };
 
   private calcCordsForOddRow = (hexagon: Hexagon): void => {
-    if (
-      !this.currentReferenceHexagon ||
-      this.currentReferenceHexagon.cords.x === null ||
-      this.currentReferenceHexagon.cords.y === null
-    )
-      throw new Error(
-        "class Hexagon -> calcCordsForOddRow: Reference Hexagon cords are null"
-      );
+    const x = (hexagon.hivePos.col - 1) * (2 * hexagon.apothem);
+    hexagon.cords.x = roundTo(x, 3);
 
-    hexagon.cords.x =
-      this.currentReferenceHexagon.cords.x + 2 * hexagon.apothem;
-    hexagon.cords.y = this.currentReferenceHexagon.cords.y;
+    const y = (hexagon.hivePos.row - 1) * (1.5 * hexagon.side);
+    hexagon.cords.y = roundTo(y, 3);
   };
 
   private calcCordsForEvenRow = (hexagon: Hexagon): void => {
-    if (
-      this.currentReferenceHexagon === null ||
-      this.currentReferenceHexagon.cords.x === null ||
-      this.currentReferenceHexagon.cords.y === null
-    )
-      throw new Error(
-        "class Hexagon -> calcCordsForEvenRow: Reference Hexagon cords are null"
-      );
+    const x =
+      (hexagon.hivePos.col - 1) * (2 * hexagon.apothem) + hexagon.apothem;
+    hexagon.cords.x = roundTo(x, 3);
 
-    // First calc K
-    const k: Cords = { x: 0, y: 0 };
-    k.x = this.currentReferenceHexagon.cords.x;
-    k.y = 1.5 * hexagon.side + this.currentReferenceHexagon.cords.y;
+    const y = (hexagon.hivePos.row - 1) * (1.5 * hexagon.side);
+    hexagon.cords.y = roundTo(y, 3);
+  };
 
-    // Then calc the x and y cords
-    hexagon.cords.x = k.x + hexagon.apothem;
-    hexagon.cords.y = k.y;
+  public execOperation(op: HiveOperation): number {
+    if (op.type === "hex activation") {
+      this.activateHexagon(Hive.instance.rows[op.pos.row - 1][op.pos.col - 1]);
+      return -1;
+    } else if (op.type === "get perimeter") {
+      const targetHex = Hive.instance.rows[op.pos.row - 1][op.pos.col - 1];
+      const connectedHexagons = this.getActiveConnectedHexagons(targetHex);
+      const perimeter = this.getPerimeter(connectedHexagons);
+      // console.log(
+      //   `[Hive Operations] - Perimeter for Cell(${op.pos.row}, ${op.pos.col}): ${perimeter}`
+      // );
+      return perimeter;
+    } else {
+      throw new Error("execOperation -> Invalid Operation Type");
+    }
+  }
+
+  public getActiveNeighbours(currentHex: Hexagon): Hexagon[] {
+    const neighbours: Hexagon[] = [];
+
+    // Step 1: Find all the neighbours
+    this.activatedHexagons
+      .filter(
+        (actHex) =>
+          !(
+            actHex.hivePos.row === currentHex.hivePos.row &&
+            actHex.hivePos.col === currentHex.hivePos.col
+          )
+      )
+      .forEach((activatedHex) => {
+        if (currentHex.isNeighbourWith(activatedHex)) {
+          neighbours.push(activatedHex);
+        }
+      });
+
+    // console.log("");
+    // console.log("[getActiveNeighbours]: Target Hexagon: ", currentHex.hivePos);
+    // console.log(
+    //   "[getActiveNeighbours]: Its Neighbours: ",
+    //   neighbours.map((hex) => hex.hivePos)
+    // );
+    // console.log("");
+
+    return neighbours;
+  }
+
+  public getActiveConnectedHexagons(targetHex: Hexagon): ConnectedHexagon[] {
+    if (targetHex.isActivated === false) return [];
+
+    const unchecked: Set<Hexagon> = new Set();
+    const checked: Set<Hexagon> = new Set();
+    const connected: ConnectedHexagon[] = [];
+    let current: Hexagon;
+
+    // Initial Hexagon
+    current = targetHex;
+    const activeNeighbours = this.getActiveNeighbours(current);
+    checked.add(current);
+    activeNeighbours.forEach((hex) => unchecked.add(hex));
+    connected.push({ ...cloneDeep(current), connectedTo: activeNeighbours });
+
+    // console.log("            -=== INITIAL LOOKUP ===-");
+    // console.log(
+    //   `******************  (${current.hivePos.row}, ${current.hivePos.col})  *********************`
+    // );
+    // console.log("");
+
+    // console.table({
+    //   initialHexagon: current.hivePos,
+    //   activeNeighbours: activeNeighbours.map((hex) => hex.hivePos),
+    // });
+
+    let i = 0;
+    while (unchecked.size > 0) {
+      const nextHexagon = unchecked.values().next().value;
+      if (nextHexagon === undefined) {
+        // console.log("Unchecked is empty");
+        continue;
+      }
+
+      current = nextHexagon;
+      unchecked.delete(current);
+      checked.add(current);
+
+      const activeNeighbours = this.getActiveNeighbours(current);
+      activeNeighbours.forEach((hex) => {
+        if (!checked.has(hex)) {
+          unchecked.add(hex);
+        }
+      });
+
+      connected.push({ ...current, connectedTo: activeNeighbours });
+
+      // console.log("            -=== NESTED LOOKUP ===-");
+      // console.log(
+      //   `******************  (${current.hivePos.row}, ${current.hivePos.col})  *********************`
+      // );
+      // console.log("");
+      // console.table({
+      //   iteration: i,
+      //   unchecked: Array.from(unchecked).map((hex) => hex.hivePos),
+      //   checked: Array.from(checked).map((hex) => hex.hivePos),
+      //   current: current.hivePos,
+      //   activeNeighbours: activeNeighbours.map((hex) => hex.hivePos),
+      // });
+
+      i++;
+    }
+
+    return connected;
+  }
+
+  public getPerimeter = (allConnectedHexagon: ConnectedHexagon[]): number => {
+    // console.log("");
+    // console.log("--------------------------------------------");
+    // console.log(
+    //   "4. All Connected Hexagons: ",
+    //   allConnectedHexagon.map((hex) => hex.hivePos)
+    // );
+    // console.log("--------------------------------------------");
+    // console.log("");
+
+    if (allConnectedHexagon.length === 0) {
+      return 0;
+    }
+
+    if (allConnectedHexagon.length === 1) {
+      return this.rows[0][0].side * 6;
+    }
+
+    return allConnectedHexagon.reduce((acc, hexagon) => {
+      // console.log("5. Hexagon: ", hexagon.hivePos);
+      // console.log("5. connectedTo: ", hexagon.connectedTo.length);
+      // console.log("--------------------------------------------");
+      // console.log("");
+      return acc + (6 - hexagon.connectedTo.length);
+    }, 0);
   };
 }

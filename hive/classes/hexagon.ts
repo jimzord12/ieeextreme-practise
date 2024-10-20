@@ -1,4 +1,5 @@
 import { Cords, IHexagon, Position } from "../types";
+import { getDistance2D } from "../utils";
 
 export class Hexagon implements IHexagon {
   public cords: Cords;
@@ -12,21 +13,6 @@ export class Hexagon implements IHexagon {
     this.hivePos = pos;
     this.side = side;
     this.apothem = this.getApothem(side);
-
-    // /// Calculate the x and y cords
-    // // Check if its the 1st Hexagon in the Hive
-    // if (this.hivePos.row === 0 && this.hivePos.col === 0) {
-    //   this.cords.x = 0;
-    //   this.cords.y = 0;
-    //   return;
-    // }
-
-    // // Check if its an odd row
-    // if (this.hivePos.row % 2 !== 0) {
-    //   this.cords.x = (this.hivePos.col - 1) + (this.side * 3);
-    //   this.cords.y = (this.hivePos.row - 1) * (this.apothem * 2);
-    //   return;
-    // }
   }
 
   public getApothem = (hexagonSide: number): number => {
@@ -35,5 +21,28 @@ export class Hexagon implements IHexagon {
 
   public activate = (): void => {
     this.isActivated = true;
+  };
+
+  isNeighbourWith = (otherHexagon: Hexagon) => {
+    if (this.cords.x === null || this.cords.y === null) {
+      throw new Error(
+        `isNeighbourWith -> This hexagon: (${this.hivePos.row}, ${this.hivePos.col}) cords are null`
+      );
+    }
+
+    if (otherHexagon.cords.x === null || otherHexagon.cords.y === null) {
+      throw new Error(
+        `isNeighbourWith -> Other hexagons: (${otherHexagon.hivePos.row}, ${otherHexagon.hivePos.col}):  cords are null`
+      );
+    }
+
+    const distance = getDistance2D(
+      this.cords.x,
+      this.cords.y,
+      otherHexagon.cords.x,
+      otherHexagon.cords.y
+    );
+
+    return distance <= this.apothem * 2;
   };
 }
