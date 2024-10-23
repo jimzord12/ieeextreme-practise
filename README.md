@@ -1,6 +1,6 @@
 # What is this Repository about?
 
-This repository contains solutions for Conding Challenges from [CS Academy](https://csacademy.com/ieeextreme-practice). The solutions are implemented in Typescript and each soluting contains simple Unit Tests and Benchmarks (Execution Speed + Memory Usage).
+This repository contains solutions for Coding Challenges from [CS Academy](https://csacademy.com/ieeextreme-practice). The solutions are implemented in **Typescript**.
 
 # How to use this Repository
 
@@ -22,9 +22,52 @@ npm i
 tsx <path-to-solution-file>.ts
 ```
 
-4. To run the tests, you can run the following command:
+## How to upload solutions to CS Academy
 
-```bash
-npm run test
-```
-"# ieeextreme-practise" 
+CS Academy allows you to upload your code solution to their platform, where you can test it against their test cases. To upload your solution, follow these steps:
+
+1. **Log in**, use your IEEE Account to log in.
+
+![](./imgs/IEEEXtreme_1.png)
+
+2. **Navigate to the Problem**, you want to solve.
+
+![](./imgs/IEEEXtreme_2.png)
+
+3. **Select the Programming Language**, here select Javascript.
+
+![](./imgs/IEEEXtreme_3.png)
+
+4. **Copy the code** (or use Open File to upload), and paste it into the editor.
+
+5. Copy the Input from the description, to the input down right.
+
+![](./imgs/IEEEXtreme_4.png)
+
+6. **Run the code**, and check the output.
+
+## Understading how to structure the code.
+
+1. To start a new challenge, copy and paste the csacademy-template.
+2. Rename the file to the challenge name.
+3. The following files should stay the same or extended if needed:
+
+   - `entry.ts`
+   - `utils.ts`
+
+4. Your solution should be implemented in the `main.ts`.
+
+5. Once you are done, you must use ESBuild to **bundle the code**. To do so, follow the steps below:
+
+   1. Go to bundle.ts file.
+   2. Add your challenge to the `directories` array.
+   3. Run the following command:
+
+   ```bash
+    tsx ./bundle.ts
+   ```
+
+   4. A `dist` folder should be created with the bundled code.
+   5. Copy the code from the `dist` folder and paste it into the CS Academy editor.
+
+"# ieeextreme-practise";

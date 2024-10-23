@@ -1,8 +1,10 @@
+import { MapTile } from "./classes/tile";
+
 export interface IArchipelagoMap {
-  islands: Island[];
-  seas: Sea[];
+  islands: IIsland[];
+  seas: ISea[];
   mapSize: MapSize;
-  map: MapTile[][];
+  map: IMapTile[][];
 }
 
 export type MapRow = MapTile[];
@@ -13,22 +15,30 @@ export interface MapSize {
   totalTiles: number;
 }
 
-export interface MapTile {
+export interface IMapTile {
   pos: MapPotision;
   type: MapTileType;
 }
 
-export interface Island {
-  landTiles: MapTile[];
-  connectedTo: Sea[];
+export interface LandTile extends MapTile {
+  type: "land";
 }
 
-export interface Sea {
-  waterTiles: MapTile[];
-  connectedTo: Island[];
+export interface SeaTile extends MapTile {
+  type: "water";
 }
 
-export type MapTileType = "water" | "land" | "unknown";
+export interface IIsland {
+  landTiles: IMapTile[];
+  connectedTo: ISea[];
+}
+
+export interface ISea {
+  waterTiles: IMapTile[];
+  connectedTo: IIsland[];
+}
+
+export type MapTileType = "water" | "land";
 
 export interface MapPotision {
   row: number;

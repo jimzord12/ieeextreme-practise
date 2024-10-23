@@ -1,4 +1,3 @@
-import { map } from "lodash";
 import { ArchipelagoMap } from "./classes/map";
 
 const main = async (input: string) => {
@@ -23,15 +22,28 @@ const main = async (input: string) => {
   const archipelagoMap = new ArchipelagoMap(rows, cols);
   console.log("#1 Archipelago Map: ", archipelagoMap);
 
-  for (let i = 0; i < rows; i++) {
+  for (let i = 1; i < rows + 1; i++) {
     const rowSymbols = restOfInput[i];
     archipelagoMap.generateMapRow(rowSymbols, i);
   }
 
-  console.log("#2 Archipelago Map: ", archipelagoMap);
+  archipelagoMap.map.forEach((row, i) => {
+    console.log(`(${i}) - Row: `, row);
+  });
 
   const querryData = restOfInput.slice(4, undefined);
   console.log("querryData: ", querryData);
+
+  archipelagoMap.createTheIslands();
+  archipelagoMap.craeteTheSeas();
+
+  archipelagoMap.islands.forEach((island, i) => {
+    console.log(`Island ${i}: `, island);
+  });
+
+  archipelagoMap.seas.forEach((sea, i) => {
+    console.log(`Sea ${i}: `, sea);
+  });
 };
 
 const input =
