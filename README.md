@@ -46,11 +46,11 @@ CS Academy allows you to upload your code solution to their platform, where you 
 
 6. **Run the code**, and check the output.
 
-## Understading how to structure the code.
+## Understanding how to setup a new Challenge
 
-1. To start a new challenge, copy and paste the csacademy-template.
-2. Rename the file to the challenge name.
-3. The following files should stay the same or extended if needed:
+1. To start a new challenge, copy and paste the csacademy-template directory.
+2. Rename the copy to the challenge name (e.g: pirates, hive, etc.).
+3. Inside the folder, the following files should stay the same or extended if needed:
 
    - `entry.ts`
    - `utils.ts`
@@ -59,15 +59,15 @@ CS Academy allows you to upload your code solution to their platform, where you 
 
 5. Once you are done, you must use ESBuild to **bundle the code**. To do so, follow the steps below:
 
-   1. Go to bundle.ts file.
-   2. Add your challenge to the `directories` array.
+   1. Go to _bundle.ts_ file (its in the root directory).
+   2. Add your challenge to the `directories` array (there are already some examples there).
    3. Run the following command:
 
    ```bash
     tsx ./bundle.ts
    ```
 
-   4. A `dist` folder should be created with the bundled code.
-   5. Copy the code from the `dist` folder and paste it into the CS Academy editor.
+   4. Once the command is executed, a `dist` folder should be created with the bundled code.
+   5. Copy the code from the `dist/${challenge-name.js}` and paste it into the CS Academy editor.
 
 "# ieeextreme-practise";
