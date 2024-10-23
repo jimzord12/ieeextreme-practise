@@ -53,7 +53,7 @@ export class ArchipelagoMap implements IArchipelagoMap {
 
     const mapRow = tiles.map((tileSymbol, column) => {
       const type = tileSymbol === "O" ? "land" : "water";
-      const tile = new MapTile({ row: rowIndex, column }, type);
+      const tile = new MapTile({ row: rowIndex, column: column + 1 }, type);
 
       if (type === "land") {
         this.allLandTiles.push(tile as LandTile);
@@ -92,7 +92,7 @@ export class ArchipelagoMap implements IArchipelagoMap {
     this.islands = islands;
   }
 
-  public craeteTheSeas(): void {
+  public createTheSeas(): void {
     const seas: ISea[] = [];
     const uncheckedTiles = new Set<MapTile>(this.allSeaTiles);
 
@@ -181,16 +181,16 @@ export class ArchipelagoMap implements IArchipelagoMap {
       if (!neighbour || JSON.stringify(neighbour) === JSON.stringify(tile))
         continue;
 
-      console.log("\nCurrent: ", tile);
-      console.log("Neighbour: ", neighbour);
+      // console.log("\nCurrent: ", tile);
+      // console.log("Neighbour: ", neighbour);
 
       if (tile.type === neighbour.type && tile.isConnectedWith(neighbour)) {
-        console.log("Neighbour PASSED: ", neighbour);
+        // console.log("Neighbour PASSED: ", neighbour);
         connectedNeighbours.push(neighbour);
       }
     }
 
-    console.log("Finished");
+    // console.log("Finished");
     return connectedNeighbours;
   }
 }

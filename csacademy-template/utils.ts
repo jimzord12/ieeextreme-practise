@@ -37,6 +37,12 @@ const nextChar = (stdinInput: StdinInput): string => {
     : "\0";
 };
 
+export const roundTo = (n: number, digits: number = 0) => {
+  const multiplicator = Math.pow(10, digits);
+  n = parseFloat((n * multiplicator).toFixed(11));
+  return Math.round(n) / multiplicator;
+};
+
 export {
   isWhitespace,
   clearWhitespaces,

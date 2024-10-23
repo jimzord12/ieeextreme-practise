@@ -1,53 +1,63 @@
 import { ArchipelagoMap } from "./classes/map.js";
+import { Query, StdinInput } from "./types.js";
+import { nextInt, nextString } from "./utils.js";
 
-const main = async (input: string) => {
+export const main = async (stdinInput: StdinInput) => {
   console.log("Welcome to the Pirates Code Challenge!\n");
-  console.log("The Input:\n", input);
+  console.log("The Stdin Input:\n", stdinInput);
 
-  const [mapSize_and_NumOfQuerries, ...restOfInput] = input.split("\n");
-  console.log("\n\n", mapSize_and_NumOfQuerries, restOfInput);
-  const [rows, cols, numOfQuerries] = mapSize_and_NumOfQuerries
-    .split(" ")
-    .map(Number);
-
-  console.log(
-    "Rows: ",
-    rows,
-    "Cols: ",
-    cols,
-    "Num of Querries: ",
-    numOfQuerries
-  );
+  // Parse input for the challenge
+  const rows: number = nextInt(stdinInput); // Map rows
+  const cols: number = nextInt(stdinInput); // Map columns
+  const querriesNum: number = nextInt(stdinInput); // Number of queries
 
   const archipelagoMap = new ArchipelagoMap(rows, cols);
   console.log("#1 Archipelago Map: ", archipelagoMap);
 
+  // Parse the strings containing symbols that represent the types of map tiles.
+  // Generate the map, one row at a time.
   for (let i = 1; i < rows + 1; i++) {
-    const rowSymbols = restOfInput[i];
+    const rowSymbols = nextString(stdinInput);
     archipelagoMap.generateMapRow(rowSymbols, i);
   }
 
+  // Just logging the map
   archipelagoMap.map.forEach((row, i) => {
-    console.log(`(${i}) - Row: `, row);
+    console.log(`(${i + 1}) - Row: `, row);
   });
 
-  const querryData = restOfInput.slice(4, undefined);
-  console.log("querryData: ", querryData);
+  const querries: Query[] = [];
+
+  // Parse the queries
+  for (let i = 0; i < querriesNum; i++) {
+    const x1: number = nextInt(stdinInput);
+    const y1: number = nextInt(stdinInput);
+    const x2: number = nextInt(stdinInput);
+    const y2: number = nextInt(stdinInput);
+    querries.push({ x1, y1, x2, y2 });
+  }
+
+  console.log("Querries: ", querries);
 
   archipelagoMap.createTheIslands();
-  archipelagoMap.craeteTheSeas();
+  archipelagoMap.createTheSeas();
 
   archipelagoMap.islands.forEach((island, i) => {
-    console.log(`Island ${i}: `, island);
+    // console.log(`Island ${i}: `, island);
+    console.log(island.landTiles);
   });
 
   archipelagoMap.seas.forEach((sea, i) => {
-    console.log(`Sea ${i}: `, sea);
+    // console.log(`Sea ${i}: `, sea);
+    console.log(sea.waterTiles);
   });
 };
 
-const input =
-  "4 12 2\nOOOOO~~OOOOO\nO~~OO~OO~~~O\nOO~OO~~O~O~O\nOOOOOO~OOOOO\n2 2 3 11\n4 7 3 9";
-const expectedOutput = "2\n1";
-
-main(input);
+// const input =
+//   "4 12 2\nOOOOO~~OOOOO\nO~~OO~OO~~~O\nOO~OO~~O~O~O\nOOOOOO~OOOOO\n2 2 3 11\n4 7 3 9";
+// const expectedOutput = "2\n1";
+main({
+  inputCursor: 0,
+  inputStdin:
+    "4 12 2\nOOOOO~~OOOOO\nO~~OO~OO~~~O\nOO~OO~~O~O~O\nOOOOOO~OOOOO\n2 2 3 11\n4 7 3 9",
+});

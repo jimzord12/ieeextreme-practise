@@ -2,9 +2,11 @@ import { Query, StdinInput } from "./types.js";
 import { nextInt, nextString } from "./utils.js";
 
 export function main(stdinInput: StdinInput): void {
-  // For this template example we will be using the Pirates Challenge: https://csacademy.com/ieeextreme-practice/task/pirates/statement/
+  // For this template, the Pirates Challenge will be used as an example: https://csacademy.com/ieeextreme-practice/task/pirates/statement/
 
-  // Parse input for the Pirates challenge
+  // The whole main()'s body should be replaced with the actual solution logic.
+
+  // Parse input for the challenge
   const N: number = nextInt(stdinInput); // Map rows
   const M: number = nextInt(stdinInput); // Map columns
   const Q: number = nextInt(stdinInput); // Number of queries
@@ -13,6 +15,7 @@ export function main(stdinInput: StdinInput): void {
   console.log("The Inputs: [M]: ", M);
   console.log("The Inputs: [Q]: ", Q);
 
+  // Parse the strings containing symbols that represent the types of map tiles.
   const map: string[] = [];
   for (let i = 0; i < N; i++) {
     map.push(nextString(stdinInput));

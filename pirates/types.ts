@@ -1,5 +1,11 @@
 import { MapTile } from "./classes/tile.js";
 
+// This type is required by the template and should NOT be removed/changed.
+export type StdinInput = {
+  inputStdin: string;
+  inputCursor: number;
+};
+
 export interface IArchipelagoMap {
   islands: IIsland[];
   seas: ISea[];
@@ -44,3 +50,10 @@ export interface MapPotision {
   row: number;
   column: number;
 }
+
+export type Query = {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+};
