@@ -1,7 +1,7 @@
-import { ConnectedHexagon, Cords, HiveOperation, Position } from "../types";
-import { roundTo } from "../utils";
-import { Hexagon } from "./hexagon";
-import { cloneDeep, round } from "lodash";
+import { ConnectedHexagon, Cords, HiveOperation, Position } from "../types.js";
+import { roundTo } from "../utils.js";
+import { Hexagon } from "./hexagon.js";
+import { cloneDeep } from "lodash-es";
 
 type Row = Hexagon[];
 

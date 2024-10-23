@@ -9,8 +9,8 @@ import {
   MapSize,
   MapTileType,
   SeaTile,
-} from "../types";
-import { MapTile } from "./tile";
+} from "../types.js";
+import { MapTile } from "./tile.js";
 
 export class ArchipelagoMap implements IArchipelagoMap {
   public islands: IIsland[] = [];

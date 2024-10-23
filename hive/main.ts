@@ -1,6 +1,5 @@
-import { exit } from "process";
-import { Hive } from "./classes/hive";
-import { HiveOperation } from "./types";
+import { Hive } from "./classes/hive.js";
+import { HiveOperation } from "./types.js";
 import console from "console";
 
 const modes = {

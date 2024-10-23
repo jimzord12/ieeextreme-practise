@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-import { askQuestion, closeReadline } from "../utils/utils";
-
 let array: number[] = [];
 let set: Set<number> = new Set<number>();
 

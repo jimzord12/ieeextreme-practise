@@ -1,4 +1,4 @@
-import { IMapTile, MapPotision, MapTileType } from "../types";
+import { IMapTile, MapPotision, MapTileType } from "../types.js";
 
 export class MapTile implements IMapTile {
   public pos: MapPotision;

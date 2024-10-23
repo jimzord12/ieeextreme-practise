@@ -1,4 +1,4 @@
-import { Hexagon } from "./classes/hexagon";
+import { Hexagon } from "./classes/hexagon.js";
 
 export interface Cords {
   x: number | null;

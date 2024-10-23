@@ -1,6 +1,6 @@
 import readline from "readline";
-import { StdinInput } from "./types";
-import { main } from "./main";
+import { StdinInput } from "./types.js";
+import { main } from "./main.js";
 
 const rl = readline.createInterface({
   input: process.stdin,

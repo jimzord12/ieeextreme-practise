@@ -1,4 +1,4 @@
-import { MapTile } from "./classes/tile";
+import { MapTile } from "./classes/tile.js";
 
 export interface IArchipelagoMap {
   islands: IIsland[];

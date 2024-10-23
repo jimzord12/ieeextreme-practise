@@ -1,5 +1,5 @@
-import { Query, StdinInput } from "./types";
-import { nextInt, nextString } from "./utils";
+import { Query, StdinInput } from "./types.js";
+import { nextInt, nextString } from "./utils.js";
 
 export function main(stdinInput: StdinInput): void {
   // For this template example we will be using the Pirates Challenge: https://csacademy.com/ieeextreme-practice/task/pirates/statement/

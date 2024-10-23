@@ -1,5 +1,5 @@
-import { Cords, IHexagon, Position } from "../types";
-import { getDistance2D } from "../utils";
+import { Cords, IHexagon, Position } from "../types.js";
+import { getDistance2D } from "../utils.js";
 
 export class Hexagon implements IHexagon {
   public cords: Cords;

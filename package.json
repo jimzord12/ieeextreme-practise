@@ -2,7 +2,7 @@
   "name": "dev",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "test": "vitest --config ./vitest.config.ts"
   },
@@ -12,6 +12,7 @@
   "description": "",
   "devDependencies": {
     "@types/lodash": "^4.17.12",
+    "@types/lodash-es": "^4.17.12",
     "@types/node": "^22.7.5",
     "esbuild": "^0.24.0",
     "ts-node": "^10.9.2",
@@ -19,6 +20,7 @@
     "vitest": "^2.1.2"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21"
   }
 }

@@ -1,4 +1,4 @@
-import { Hexagon } from "./classes/hexagon";
+import { Hexagon } from "./classes/hexagon.js";
 
 export const getDistance2D = (
   x1: number,

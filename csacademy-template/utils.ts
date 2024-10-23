@@ -1,4 +1,4 @@
-import { StdinInput } from "./types";
+import { StdinInput } from "./types.js";
 
 const isWhitespace = (character: string): boolean =>
   " \t\n\r\v".includes(character);

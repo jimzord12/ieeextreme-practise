@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { minPermutation } from "./minimum-permutation";
+import { minPermutation } from "./minimum-permutation.js";
 
 describe("Minimum Permutation", () => {
   test("Functionality Test", () => {

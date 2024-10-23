@@ -1,4 +1,4 @@
-import { ArchipelagoMap } from "./classes/map";
+import { ArchipelagoMap } from "./classes/map.js";
 
 const main = async (input: string) => {
   console.log("Welcome to the Pirates Code Challenge!\n");
