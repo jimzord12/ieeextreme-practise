@@ -12,7 +12,7 @@ export const main = async (stdinInput: StdinInput) => {
   const querriesNum: number = nextInt(stdinInput); // Number of queries
 
   const archipelagoMap = new ArchipelagoMap(rows, cols);
-  console.log("#1 Archipelago Map: ", archipelagoMap);
+  // console.log("#1 Archipelago Map: ", archipelagoMap);
 
   // Parse the strings containing symbols that represent the types of map tiles.
   // Generate the map, one row at a time.
@@ -23,7 +23,7 @@ export const main = async (stdinInput: StdinInput) => {
 
   // Just logging the map
   archipelagoMap.map.forEach((row, i) => {
-    console.log(`(${i + 1}) - Row: `, row);
+    // console.log(`(${i + 1}) - Row: `, row);
   });
 
   const querries: Query[] = [];
@@ -37,19 +37,19 @@ export const main = async (stdinInput: StdinInput) => {
     querries.push({ x1, y1, x2, y2 });
   }
 
-  console.log("Querries: ", querries);
+  // console.log("Querries: ", querries);
 
   archipelagoMap.createTheIslands();
   archipelagoMap.createTheSeas();
 
   archipelagoMap.islands.forEach((island, i) => {
     // console.log(`Island ${i}: `, island);
-    console.log(island.landTiles);
+    // console.log(island.landTiles);
   });
 
   archipelagoMap.seas.forEach((sea, i) => {
     // console.log(`Sea ${i}: `, sea);
-    console.log(sea.waterTiles);
+    // console.log(sea.waterTiles);
   });
 };
 
