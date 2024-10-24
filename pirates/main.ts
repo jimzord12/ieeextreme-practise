@@ -43,33 +43,33 @@ export const main = async (stdinInput: StdinInput) => {
   archipelagoMap.createTheIslands();
   archipelagoMap.createTheSeas();
 
-  archipelagoMap.islands.forEach((island, i) => {
-    // console.log(`Island ${i}: `, island);
-    // console.log(island.landTiles);
-  });
+  // archipelagoMap.islands.forEach((island, i) => {
+  //   // console.log(`Island ${i}: `, island);
+  //   // console.log(island.landTiles);
+  // });
 
-  archipelagoMap.seas.forEach((sea, i) => {
-    // console.log(`Sea ${i}: `, sea);
-    // console.log(sea.waterTiles);
-  });
+  // archipelagoMap.seas.forEach((sea, i) => {
+  //   // console.log(`Sea ${i}: `, sea);
+  //   // console.log(sea.waterTiles);
+  // });
 
-  archipelagoMap.setPiratesTile(
-    new MapTile(
-      { row: querries[0].x1, column: querries[0].y1 },
-      "water"
-    ) as SeaTile
-  );
+  // archipelagoMap.setPiratesTile(
+  //   new MapTile(
+  //     { row: querries[0].x1, column: querries[0].y1 },
+  //     "water"
+  //   ) as SeaTile
+  // );
 
-  console.log("\nPirates Tile: ", archipelagoMap.piratesTile);
+  // console.log("\nPirates Tile: ", archipelagoMap.piratesTile);
 
-  const piratesSea = archipelagoMap.findPiratesSea();
-  console.log("Pirates Sea: ", piratesSea);
+  // const piratesSea = archipelagoMap.findPiratesSea();
+  // console.log("Pirates Sea: ", piratesSea);
 
   archipelagoMap.find_islands_and_seas_connections();
 
-  archipelagoMap.createNodes(piratesSea, null, new Set());
+  // archipelagoMap.createNodes(piratesSea, null, new Set());
 
-  archipelagoMap.enhanceNodes();
+  // archipelagoMap.enhanceNodes();
 
   // archipelagoMap.islands.forEach((island) => {
   //   archipelagoMap.enhanceNode(island);
@@ -81,13 +81,33 @@ export const main = async (stdinInput: StdinInput) => {
 
   console.log("\n========================================================");
   console.log("========================================================");
-  archipelagoMap.allNodes.forEach((node, i) => {
-    console.log(`\nNode ${i.self.id} - Prev: `, node.prev);
-    console.log("------------------------------");
-    console.log(`Node ${i.self.id} - Next: `, node.next);
-    console.log("------------------------------");
-    console.log(`Node ${i.self.id} - Self: `, node.self);
-  });
+  //   archipelagoMap.allNodes.forEach((node, i) => {
+  //     console.log(`\nNode ${i.self.id} - Prev: `, node.prev);
+  //     console.log("------------------------------");
+  //     console.log(`Node ${i.self.id} - Next: `, node.next);
+  //     console.log("------------------------------");
+  //     console.log(`Node ${i.self.id} - Self: `, node.self);
+  //   });
+
+  const pirateTile = new MapTile(
+    { row: querries[1].x1, column: querries[1].y1 },
+    "water"
+  ) as SeaTile;
+
+  const treasureTile = new MapTile(
+    { row: querries[1].x2, column: querries[1].y2 },
+    "water"
+  ) as SeaTile;
+
+  const path = archipelagoMap.getBestPath(pirateTile, treasureTile);
+  console.log(
+    "\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+  );
+  console.log("\n The Best Path: ", path.length);
+  // path.forEach((node, i) => {
+  //   console.log(`\nPath Node ${i} - Self: `, node.self);
+  //   console.log("------------------------------");
+  // });
 };
 
 // const input =

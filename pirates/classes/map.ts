@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import {
   IArchipelagoMap,
   IIsland,
@@ -261,25 +262,26 @@ export class ArchipelagoMap implements IArchipelagoMap {
     });
   }
 
-  findPiratesSea(): ISea {
-    if (this.piratesTile === null) throw new Error("Pirates' Tile is null");
+  findPiratesSea(piratesTile: MapTile): ISea {
+    if (piratesTile === null) throw new Error("Pirates' Tile is null");
     const sea = this.seas.find((sea) =>
       sea.tiles.some(
         (tile) =>
-          tile.pos.row === this.piratesTile?.pos.row &&
-          tile.pos.column === this.piratesTile?.pos.column
+          tile.pos.row === piratesTile?.pos.row &&
+          tile.pos.column === piratesTile?.pos.column
       )
     );
     if (sea === undefined) throw new Error(`Pirates' Sea not founds`);
     return sea;
   }
 
-  findTreasureSea(): ISea {
+  findTreasureSea(treasureTile: MapTile): ISea {
+    if (treasureTile === null) throw new Error("Treasure's Tile is null");
     const sea = this.seas.find((sea) =>
       sea.tiles.some(
         (tile) =>
-          tile.pos.row === this.treasureTile?.pos.row &&
-          tile.pos.column === this.treasureTile?.pos.column
+          tile.pos.row === treasureTile?.pos.row &&
+          tile.pos.column === treasureTile?.pos.column
       )
     );
     if (sea === undefined) throw new Error("Treasure's Sea not founds");
@@ -327,20 +329,20 @@ export class ArchipelagoMap implements IArchipelagoMap {
     // Mark this group as visited
     visited.add(grp.id);
 
-    console.log("Current Grp ID: ", grp.id);
+    // console.log("Current Grp ID: ", grp.id);
 
     const connectedGrps = this.findConnectedGrps(grp);
-    console.log("ConnectedGrps before filter: ", connectedGrps);
+    // console.log("ConnectedGrps before filter: ", connectedGrps);
     const filteredGrps = connectedGrps.filter((g) => {
-      console.log("\n******************************************");
-      console.log("Target Group ID: ", g.id);
-      console.log("Target Group's PREV ID: ", prev?.id);
-      console.log("Is True: ", !visited.has(g.id) && prev?.id !== g.id);
+      // console.log("\n******************************************");
+      // console.log("Target Group ID: ", g.id);
+      // console.log("Target Group's PREV ID: ", prev?.id);
+      // console.log("Is True: ", !visited.has(g.id) && prev?.id !== g.id);
 
       return !visited.has(g.id) && prev?.id !== g.id;
     });
 
-    console.log("\nConnected Groups: ", filteredGrps);
+    // console.log("\nConnected Groups: ", filteredGrps);
     this.allNodes.add({
       prev: prev,
       next: filteredGrps.length === 0 ? null : filteredGrps,
@@ -377,6 +379,85 @@ export class ArchipelagoMap implements IArchipelagoMap {
 
   private findNodeFromGrp(grp: IIsland | ISea): MyNode | undefined {
     return Array.from(this.allNodes).find((node) => node.self.id === grp.id);
+  }
+
+  public getBestPath(pirates: MapTile, treasure: MapTile) {
+    const piratesSea = this.findPiratesSea(pirates);
+    const treasureSea = this.findTreasureSea(treasure);
+
+    console.log("\nPirates Sea: ", piratesSea);
+    console.log("Treasure Sea: ", treasureSea);
+
+    this.createNodes(piratesSea, null, new Set());
+    this.enhanceNodes();
+
+    let queue: MyNode[] = [];
+    const visited = new Set<MyNode>();
+    const currentPath = [];
+    const allPaths: MyNode[][] = [];
+    let currentNode = this.findNodeFromGrp(piratesSea) as MyNode;
+
+    console.log("\nAll Nodes: ", this.allNodes);
+    console.log("++++++++++++++++++++++++++++");
+
+    while (visited.size < this.allNodes.size) {
+      if (!currentNode) {
+        // throw new Error(`Current Node not found`);
+        break;
+      }
+
+      if (currentNode.self.id === treasureSea.id) {
+        allPaths.push([...currentPath, currentNode]);
+      }
+
+      if (visited.has(currentNode) || currentNode.next === null) {
+        // console.log("###########################################");
+        // console.log("0 - aaaaaaaaaa: ", currentNode.self.id);
+        // console.log("1 - aaaaaaaaaa: ", visited.has(currentNode));
+        // console.log("2 - aaaaaaaaaa: ", currentNode.next === null);
+        // console.log("###########################################");
+        queue.shift();
+        currentPath.pop();
+        currentNode = queue[0] as MyNode;
+
+        continue;
+      }
+
+      visited.add(currentNode);
+      console.log("\n**********************************");
+      if (currentNode.next) {
+        currentPath.push(currentNode);
+        const newNodes = [...currentNode.next] as MyNode[];
+        queue = [...newNodes, ...queue];
+        console.log("Current Node: ", currentNode.self.id);
+        console.log("--------------------------------------------------");
+        console.log(
+          "Queue: ",
+          queue.map((n) => n.self.id)
+        );
+        console.log("---------------------------------------------d-----");
+        console.log(
+          "Current Path: ",
+          currentPath.map((n) => n.self.id)
+        );
+        console.log("--------------------------------------------------");
+        console.log("Visited: ", visited.size);
+      }
+      //  else {
+      //   queue.shift();
+      //   currentPath.pop();
+      // }
+
+      currentNode = queue[0] as MyNode;
+    }
+
+    // let bestPath
+    const onlyIslandNodes = allPaths.map((path) =>
+      path.filter((node) => node.self.type === "island")
+    );
+    const sorted = onlyIslandNodes.sort((a, b) => a.length - b.length);
+
+    return sorted[0];
   }
 
   // public convertMapTilesToNodes() {}
