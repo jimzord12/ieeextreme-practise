@@ -13,6 +13,12 @@ export interface IArchipelagoMap {
   map: IMapTile[][];
 }
 
+export interface MyNode {
+  next: MyNode[] | IIsland[] | ISea[] | null;
+  prev: MyNode | IIsland | ISea | null;
+  self: IIsland | ISea;
+}
+
 export type MapRow = MapTile[];
 
 export interface MapSize {
@@ -35,13 +41,19 @@ export interface SeaTile extends MapTile {
 }
 
 export interface IIsland {
-  landTiles: IMapTile[];
-  connectedTo: ISea[];
+  id: number;
+  tiles: MapTile[];
+  connectedTo: Set<number>;
+  type: string;
+  size: number;
 }
 
 export interface ISea {
-  waterTiles: IMapTile[];
-  connectedTo: IIsland[];
+  id: number;
+  tiles: MapTile[];
+  connectedTo: Set<number>;
+  type: string;
+  size: number;
 }
 
 export type MapTileType = "water" | "land";

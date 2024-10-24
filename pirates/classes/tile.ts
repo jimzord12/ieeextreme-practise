@@ -1,4 +1,4 @@
-import { IMapTile, MapPotision, MapTileType } from "../types.js";
+import { IIsland, IMapTile, ISea, MapPotision, MapTileType } from "../types.js";
 
 export class MapTile implements IMapTile {
   public pos: MapPotision;
@@ -23,6 +23,14 @@ export class MapTile implements IMapTile {
       this.isConnectedVertically(comparisonTile) ||
       this.isConnectedDiagonally(comparisonTile)
     );
+  }
+
+  public isConnectedWithGroup(group: IIsland | ISea): boolean {
+    const connectedTiles = group.tiles.filter((tile) =>
+      this.isConnectedWith(tile)
+    );
+
+    return connectedTiles.length > 0;
   }
 
   private isConnectedHorizontally(comparisonTile: MapTile): boolean {

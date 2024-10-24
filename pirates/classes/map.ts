@@ -1,4 +1,3 @@
-import { type } from "os";
 import {
   IArchipelagoMap,
   IIsland,
@@ -8,6 +7,7 @@ import {
   MapRow,
   MapSize,
   MapTileType,
+  MyNode,
   SeaTile,
 } from "../types.js";
 import { MapTile } from "./tile.js";
@@ -19,6 +19,8 @@ export class ArchipelagoMap implements IArchipelagoMap {
   public map: MapRow[] = [];
   public allLandTiles: LandTile[] = [];
   public allSeaTiles: SeaTile[] = [];
+  public allNodes = new Set<MyNode>();
+  public currentId = 0;
   private static directions = [
     { row: 0, column: -1 }, // left
     { row: 0, column: 1 }, // right
@@ -29,11 +31,21 @@ export class ArchipelagoMap implements IArchipelagoMap {
     { row: -1, column: 1 }, // up-right
     { row: -1, column: -1 }, // up-left
   ];
+  public piratesTile: SeaTile | null = null;
+  public treasureTile: SeaTile | null = null;
 
   public constructor(rows: number, columns: number) {
     this.mapSize = { rows, columns, totalTiles: rows * columns };
 
     // this.map = this.generateMap();
+  }
+
+  public setPiratesTile(tile: SeaTile) {
+    this.piratesTile = tile;
+  }
+
+  public setTreasureTile(tile: SeaTile) {
+    this.treasureTile = tile;
   }
 
   public generateMap(mapSymbols: string): void {
@@ -82,20 +94,23 @@ export class ArchipelagoMap implements IArchipelagoMap {
       if (tiles.length === 0) continue;
 
       const island = {
-        landTiles: tiles,
-        connectedTo: [],
+        id: ++this.currentId,
+        tiles: tiles,
+        connectedTo: new Set<number>(),
+        type: "island",
+        size: tiles.length,
       };
 
       islands.push(island);
       tiles.forEach((tile) => uncheckedTiles.delete(tile));
-      console.log("2 - Unchecked Tiles: ", uncheckedTiles.size);
+      // console.log("2 - Unchecked Tiles: ", uncheckedTiles.size);
     }
 
     this.islands = islands;
     islands.forEach((island, index) => {
-      console.log(`The Island ${index + 1}: `, island.landTiles.length);
+      // console.log(`The Island ${index + 1}: `, island.tiles.length);
     });
-    console.log("Total Land Tiles: ", this.allLandTiles.length);
+    // console.log("Total Land Tiles: ", this.allLandTiles.length);
   }
 
   public createTheSeas(): void {
@@ -103,7 +118,7 @@ export class ArchipelagoMap implements IArchipelagoMap {
     const uncheckedTiles = new Set<MapTile>(this.allSeaTiles);
 
     while (uncheckedTiles.size > 0) {
-      console.log("\n(Seas) 1 - Unchecked Tiles: ", uncheckedTiles.size);
+      // console.log("\n(Seas) 1 - Unchecked Tiles: ", uncheckedTiles.size);
       const nextTile = uncheckedTiles.values().next().value;
       if (!nextTile) break;
 
@@ -112,20 +127,23 @@ export class ArchipelagoMap implements IArchipelagoMap {
       if (tiles.length === 0) continue;
 
       const sea = {
-        waterTiles: tiles,
-        connectedTo: [],
+        id: ++this.currentId,
+        tiles: tiles,
+        connectedTo: new Set<number>(),
+        type: "sea",
+        size: tiles.length,
       };
 
       seas.push(sea);
       tiles.forEach((tile) => uncheckedTiles.delete(tile));
-      console.log("(Seas) 2 - Unchecked Tiles: ", uncheckedTiles.size);
+      // console.log("(Seas) 2 - Unchecked Tiles: ", uncheckedTiles.size);
     }
 
     this.seas = seas;
     seas.forEach((sea, index) => {
-      console.log(`The sea ${index + 1}: `, sea.waterTiles.length);
+      // console.log(`The sea ${index + 1}: `, sea.tiles.length);
     });
-    console.log("Total Water Tiles: ", this.allSeaTiles.length);
+    // console.log("Total Water Tiles: ", this.allSeaTiles.length);
   }
 
   private findConnectedTiles(startingTile: MapTile): {
@@ -138,8 +156,8 @@ export class ArchipelagoMap implements IArchipelagoMap {
     let currentTile: MapTile = startingTile;
 
     const neighbours = this.findConnectedNeighbours(currentTile);
-    console.log("\nStarting Tile: ", startingTile.pos);
-    console.log("\nStarting Neighbours: ", neighbours.length);
+    // console.log("\nStarting Tile: ", startingTile.pos);
+    // console.log("\nStarting Neighbours: ", neighbours.length);
     neighbours.forEach((nbr) => uncheckedTiles.add(nbr));
     checkedTiles.add(currentTile);
     connectedTiles.add(currentTile);
@@ -210,6 +228,158 @@ export class ArchipelagoMap implements IArchipelagoMap {
     // console.log("Finished");
     return connectedNeighbours;
   }
+
+  isConnectedWith(groupA: IIsland | ISea, groupB: IIsland | ISea): boolean {
+    return groupA.connectedTo.has(groupB.id);
+  }
+
+  public find_islands_and_seas_connections(): void {
+    this.islands.forEach((island) => {
+      island.tiles.forEach((landTile) => {
+        this.seas.some((sea) => {
+          const _isConnected = landTile.isConnectedWithGroup(sea);
+          if (_isConnected) {
+            island.connectedTo.add(sea.id);
+            return true;
+          }
+        });
+      });
+    });
+
+    this.seas.forEach((sea) => {
+      sea.tiles.forEach((seaTile) => {
+        this.islands.some((island) => {
+          // if (island.connectedTo.has(sea.id)) return true;
+
+          const _isConnected = seaTile.isConnectedWithGroup(island);
+          if (_isConnected) {
+            sea.connectedTo.add(island.id);
+            return true;
+          }
+        });
+      });
+    });
+  }
+
+  findPiratesSea(): ISea {
+    if (this.piratesTile === null) throw new Error("Pirates' Tile is null");
+    const sea = this.seas.find((sea) =>
+      sea.tiles.some(
+        (tile) =>
+          tile.pos.row === this.piratesTile?.pos.row &&
+          tile.pos.column === this.piratesTile?.pos.column
+      )
+    );
+    if (sea === undefined) throw new Error(`Pirates' Sea not founds`);
+    return sea;
+  }
+
+  findTreasureSea(): ISea {
+    const sea = this.seas.find((sea) =>
+      sea.tiles.some(
+        (tile) =>
+          tile.pos.row === this.treasureTile?.pos.row &&
+          tile.pos.column === this.treasureTile?.pos.column
+      )
+    );
+    if (sea === undefined) throw new Error("Treasure's Sea not founds");
+    return sea;
+  }
+
+  private isTileConnectedWithGrp(tile: MapTile, grp: IIsland | ISea) {
+    return grp.tiles.some((grpTile) => tile.isConnectedWith(grpTile));
+  }
+
+  private findConnectedGrps(grp: IIsland | ISea): IIsland[] | ISea[] {
+    const connected = new Set<IIsland | ISea>();
+
+    if (grp.type === "island") {
+      grp.tiles.forEach((t) => {
+        this.seas.forEach((s) => {
+          if (this.isTileConnectedWithGrp(t, s) && !connected.has(s))
+            connected.add(s);
+        });
+      });
+    }
+
+    if (grp.type === "sea") {
+      grp.tiles.forEach((t) => {
+        this.islands.forEach((i) => {
+          if (this.isTileConnectedWithGrp(t, i) && !connected.has(i))
+            connected.add(i);
+        });
+      });
+    }
+
+    return Array.from(connected);
+  }
+
+  public createNodes(
+    grp: IIsland | ISea,
+    prev: IIsland | ISea | null,
+    visited: Set<number>
+  ) {
+    // If the group has already been visited, return early to avoid infinite recursion
+    if (visited.has(grp.id)) {
+      return;
+    }
+
+    // Mark this group as visited
+    visited.add(grp.id);
+
+    console.log("Current Grp ID: ", grp.id);
+
+    const connectedGrps = this.findConnectedGrps(grp);
+    console.log("ConnectedGrps before filter: ", connectedGrps);
+    const filteredGrps = connectedGrps.filter((g) => {
+      console.log("\n******************************************");
+      console.log("Target Group ID: ", g.id);
+      console.log("Target Group's PREV ID: ", prev?.id);
+      console.log("Is True: ", !visited.has(g.id) && prev?.id !== g.id);
+
+      return !visited.has(g.id) && prev?.id !== g.id;
+    });
+
+    console.log("\nConnected Groups: ", filteredGrps);
+    this.allNodes.add({
+      prev: prev,
+      next: filteredGrps.length === 0 ? null : filteredGrps,
+      self: grp,
+    });
+
+    filteredGrps.forEach((g) => this.createNodes(g, grp, visited));
+  }
+
+  public enhanceNodes() {
+    this.allNodes.forEach((node) => {
+      const { next, prev } = node;
+      const newNextNodes: MyNode[] = [];
+
+      if (next) {
+        next.forEach((n) => {
+          const nextNode = this.findNodeFromGrp(n as IIsland | ISea);
+          if (nextNode) {
+            newNextNodes.push(nextNode);
+          }
+        });
+
+        node.next = newNextNodes;
+      }
+
+      if (prev) {
+        const prevNode = this.findNodeFromGrp(prev as IIsland | ISea);
+        if (prevNode) {
+          node.prev = prevNode;
+        }
+      }
+    });
+  }
+
+  private findNodeFromGrp(grp: IIsland | ISea): MyNode | undefined {
+    return Array.from(this.allNodes).find((node) => node.self.id === grp.id);
+  }
+
+  // public convertMapTilesToNodes() {}
 }
 
 // Current:  MapTile { pos: { row: 3, column: 7 }, type: 'water' }

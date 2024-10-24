@@ -1,5 +1,6 @@
 import { ArchipelagoMap } from "./classes/map.js";
-import { Query, StdinInput } from "./types.js";
+import { MapTile } from "./classes/tile.js";
+import { Query, SeaTile, StdinInput } from "./types.js";
 import { nextInt, nextString } from "./utils.js";
 
 export const main = async (stdinInput: StdinInput) => {
@@ -30,11 +31,11 @@ export const main = async (stdinInput: StdinInput) => {
 
   // Parse the queries
   for (let i = 0; i < querriesNum; i++) {
-    const x1: number = nextInt(stdinInput);
-    const y1: number = nextInt(stdinInput);
-    const x2: number = nextInt(stdinInput);
-    const y2: number = nextInt(stdinInput);
-    querries.push({ x1, y1, x2, y2 });
+    const p_x1: number = nextInt(stdinInput);
+    const p_y1: number = nextInt(stdinInput);
+    const t_x2: number = nextInt(stdinInput);
+    const t_y2: number = nextInt(stdinInput);
+    querries.push({ x1: p_x1, y1: p_y1, x2: t_x2, y2: t_y2 });
   }
 
   // console.log("Querries: ", querries);
@@ -50,6 +51,42 @@ export const main = async (stdinInput: StdinInput) => {
   archipelagoMap.seas.forEach((sea, i) => {
     // console.log(`Sea ${i}: `, sea);
     // console.log(sea.waterTiles);
+  });
+
+  archipelagoMap.setPiratesTile(
+    new MapTile(
+      { row: querries[0].x1, column: querries[0].y1 },
+      "water"
+    ) as SeaTile
+  );
+
+  console.log("\nPirates Tile: ", archipelagoMap.piratesTile);
+
+  const piratesSea = archipelagoMap.findPiratesSea();
+  console.log("Pirates Sea: ", piratesSea);
+
+  archipelagoMap.find_islands_and_seas_connections();
+
+  archipelagoMap.createNodes(piratesSea, null, new Set());
+
+  archipelagoMap.enhanceNodes();
+
+  // archipelagoMap.islands.forEach((island) => {
+  //   archipelagoMap.enhanceNode(island);
+  // });
+
+  // archipelagoMap.seas.forEach((sea) => {
+  //   archipelagoMap.enhanceNode(sea);
+  // });
+
+  console.log("\n========================================================");
+  console.log("========================================================");
+  archipelagoMap.allNodes.forEach((node, i) => {
+    console.log(`\nNode ${i.self.id} - Prev: `, node.prev);
+    console.log("------------------------------");
+    console.log(`Node ${i.self.id} - Next: `, node.next);
+    console.log("------------------------------");
+    console.log(`Node ${i.self.id} - Self: `, node.self);
   });
 };
 
