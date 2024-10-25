@@ -4,8 +4,8 @@ import { Query, SeaTile, StdinInput } from "./types.js";
 import { nextInt, nextString } from "./utils.js";
 
 export const main = async (stdinInput: StdinInput) => {
-  console.log("Welcome to the Pirates Code Challenge!\n");
-  console.log("The Stdin Input:\n", stdinInput);
+  // console.log("Welcome to the Pirates Code Challenge!\n");
+  // console.log("The Stdin Input:\n", stdinInput);
 
   // Parse input for the challenge
   const rows: number = nextInt(stdinInput); // Map rows
@@ -79,8 +79,8 @@ export const main = async (stdinInput: StdinInput) => {
   //   archipelagoMap.enhanceNode(sea);
   // });
 
-  console.log("\n========================================================");
-  console.log("========================================================");
+  // console.log("\n========================================================");
+  // console.log("========================================================");
   //   archipelagoMap.allNodes.forEach((node, i) => {
   //     console.log(`\nNode ${i.self.id} - Prev: `, node.prev);
   //     console.log("------------------------------");
@@ -89,32 +89,36 @@ export const main = async (stdinInput: StdinInput) => {
   //     console.log(`Node ${i.self.id} - Self: `, node.self);
   //   });
 
-  const pirateTile = new MapTile(
-    { row: querries[1].x1, column: querries[1].y1 },
-    "water"
-  ) as SeaTile;
+  querries.forEach((query) => {
+    const pirateTile = new MapTile(
+      { row: query.x1, column: query.y1 },
+      "water"
+    ) as SeaTile;
 
-  const treasureTile = new MapTile(
-    { row: querries[1].x2, column: querries[1].y2 },
-    "water"
-  ) as SeaTile;
+    const treasureTile = new MapTile(
+      { row: query.x2, column: query.y2 },
+      "water"
+    ) as SeaTile;
 
-  const path = archipelagoMap.getBestPath(pirateTile, treasureTile);
-  console.log(
-    "\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
-  );
-  console.log("\n The Best Path: ", path.length);
+    // console.log("Query: ", query);
+    // console.log("Pirates Tile: ", pirateTile);
+    // console.log("Treasure Tile: ", treasureTile);
+
+    const path = archipelagoMap.getBestPath(pirateTile, treasureTile);
+    console.log(path.length);
+  });
+
+  // console.log(
+  //   "\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+  // );
   // path.forEach((node, i) => {
   //   console.log(`\nPath Node ${i} - Self: `, node.self);
   //   console.log("------------------------------");
   // });
 };
 
-// const input =
-//   "4 12 2\nOOOOO~~OOOOO\nO~~OO~OO~~~O\nOO~OO~~O~O~O\nOOOOOO~OOOOO\n2 2 3 11\n4 7 3 9";
-// const expectedOutput = "2\n1";
-main({
-  inputCursor: 0,
-  inputStdin:
-    "4 12 2\nOOOOO~~OOOOO\nO~~OO~OO~~~O\nOO~OO~~O~O~O\nOOOOOO~OOOOO\n2 2 3 11\n4 7 3 9",
-});
+// main({
+//   inputCursor: 0,
+//   inputStdin:
+//     "4 12 2\nOOOOO~~OOOOO\nO~~OO~OO~~~O\nOO~OO~~O~O~O\nOOOOOO~OOOOO\n2 2 3 11\n4 7 3 9",
+// });

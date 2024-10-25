@@ -1,4 +1,3 @@
-import { vi } from "vitest";
 import {
   IArchipelagoMap,
   IIsland,
@@ -86,7 +85,7 @@ export class ArchipelagoMap implements IArchipelagoMap {
     const uncheckedTiles = new Set<MapTile>(this.allLandTiles);
 
     while (uncheckedTiles.size > 0) {
-      console.log("\n1 - Unchecked Tiles: ", uncheckedTiles.size);
+      // console.log("\n1 - Unchecked Tiles: ", uncheckedTiles.size);
       const nextTile = uncheckedTiles.values().next().value;
       if (!nextTile) break;
 
@@ -381,12 +380,17 @@ export class ArchipelagoMap implements IArchipelagoMap {
     return Array.from(this.allNodes).find((node) => node.self.id === grp.id);
   }
 
+  private emptyAllNodes = () => {
+    this.allNodes = new Set<MyNode>();
+  };
+
   public getBestPath(pirates: MapTile, treasure: MapTile) {
+    this.emptyAllNodes();
     const piratesSea = this.findPiratesSea(pirates);
     const treasureSea = this.findTreasureSea(treasure);
 
-    console.log("\nPirates Sea: ", piratesSea);
-    console.log("Treasure Sea: ", treasureSea);
+    // console.log("\nPirates Sea: ", piratesSea);
+    // console.log("Treasure Sea: ", treasureSea);
 
     this.createNodes(piratesSea, null, new Set());
     this.enhanceNodes();
@@ -397,8 +401,8 @@ export class ArchipelagoMap implements IArchipelagoMap {
     const allPaths: MyNode[][] = [];
     let currentNode = this.findNodeFromGrp(piratesSea) as MyNode;
 
-    console.log("\nAll Nodes: ", this.allNodes);
-    console.log("++++++++++++++++++++++++++++");
+    // console.log("\nAll Nodes: ", this.allNodes);
+    // console.log("++++++++++++++++++++++++++++");
 
     while (visited.size < this.allNodes.size) {
       if (!currentNode) {
@@ -424,24 +428,24 @@ export class ArchipelagoMap implements IArchipelagoMap {
       }
 
       visited.add(currentNode);
-      console.log("\n**********************************");
+      // console.log("\n**********************************");
       if (currentNode.next) {
         currentPath.push(currentNode);
         const newNodes = [...currentNode.next] as MyNode[];
         queue = [...newNodes, ...queue];
-        console.log("Current Node: ", currentNode.self.id);
-        console.log("--------------------------------------------------");
-        console.log(
-          "Queue: ",
-          queue.map((n) => n.self.id)
-        );
-        console.log("---------------------------------------------d-----");
-        console.log(
-          "Current Path: ",
-          currentPath.map((n) => n.self.id)
-        );
-        console.log("--------------------------------------------------");
-        console.log("Visited: ", visited.size);
+        // console.log("Current Node: ", currentNode.self.id);
+        // console.log("--------------------------------------------------");
+        // console.log(
+        //   "Queue: ",
+        //   queue.map((n) => n.self.id)
+        // );
+        // console.log("---------------------------------------------d-----");
+        // console.log(
+        //   "Current Path: ",
+        //   currentPath.map((n) => n.self.id)
+        // );
+        // console.log("--------------------------------------------------");
+        // console.log("Visited: ", visited.size);
       }
       //  else {
       //   queue.shift();
@@ -456,6 +460,7 @@ export class ArchipelagoMap implements IArchipelagoMap {
       path.filter((node) => node.self.type === "island")
     );
     const sorted = onlyIslandNodes.sort((a, b) => a.length - b.length);
+    // console.log("Sorted: ", sorted);
 
     return sorted[0];
   }
