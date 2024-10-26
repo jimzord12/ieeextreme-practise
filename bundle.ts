@@ -5,10 +5,20 @@ import { minify } from "terser";
 
 // Configuration for all directories to be bundled
 const directories = [
+  // {
+  //   name: "pirates",
+  //   entry: "./pirates/entry.ts",
+  //   outDir: "pirates/dist",
+  // },
+  // {
+  //   name: "two-fridges-ieeex18-2024",
+  //   entry: "./two-fridges-ieeex18-2024/entry.ts",
+  //   outDir: "two-fridges-ieeex18-2024/dist",
+  // },
   {
-    name: "pirates",
-    entry: "./pirates/entry.ts",
-    outDir: "pirates/dist",
+    name: "alice-ieeex18-2024",
+    entry: "./alice-ieeex18-2024/entry.ts",
+    outDir: "alice-ieeex18-2024/dist",
   },
 ];
 
